@@ -21,172 +21,6 @@ const httpsAgent = new https.Agent({
 });
 
 // =============================================================================
-// 스트리밍 URL 패턴 매핑
-// =============================================================================
-const streamPatterns = {
-  'KBS': {
-    type: 'HLS',
-    getUrl: (cctv) => {
-      // 토큰 기반 - 현재 토큰 사용 (실시간 생성은 추가 로직 필요)
-      return `https://kakaocctv-cache.loomex.net/lowStream/_definst_/${cctv.CCTVIP}_low.stream/playlist.m3u8`;
-    }
-  },
-  
-  '거제': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://${cctv.ID}.streamlock.net/live/smartvideo${cctv.PASSWD}.stream/playlist.m3u8`
-  },
-  
-  '경산': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://27.101.20.112:1935/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '경주': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://streamits.gyeongju.go.kr:1935/live/live${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '고양': {
-    type: 'MP4_SEGMENT',
-    getUrl: (cctv) => null // WebView로만 재생
-  },
-  
-  '광양': {
-    type: 'HLS',
-    getUrl: (cctv) => {
-      const paddedId = String(cctv.ID).padStart(3, '0');
-      return `http://121.179.236.148:1935/gy_wowza/site${paddedId}.stream/playlist.m3u8`;
-    }
-  },
-  
-  '광주': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://gjtic.go.kr/cctv${cctv.CH}/livehttp/${cctv.ID}_video2/chunklist.m3u8`
-  },
-  
-  '구미': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://its.gumi.go.kr:9443/live/video${cctv.CCTVIP}.stream/playlist.m3u8`
-  },
-  
-  '금강': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://cctvlo.geumriver.go.kr/live/cctv${cctv.ID}/hls.m3u8`
-  },
-  
-  '김해': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://its.gimhae.go.kr:1443/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '낙동강': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://cctvlo.nakdongriver.go.kr/live/cctv${cctv.ID}/hls.m3u8`
-  },
-  
-  '남양주': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://${cctv.CCTVIP}/media/${cctv.ID}/chunklist.m3u8`
-  },
-  
-  '대구': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://carcctv.daegu.go.kr/live3/_definst_/ch${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '대전': {
-    type: 'MP4_SEGMENT',
-    getUrl: (cctv) => null // WebView로만 재생
-  },
-  
-  '목포': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://itslive.mokpo.go.kr/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '부산': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://61.43.246.${cctv.CCTVIP}:1935/rtplive/cctv_${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '부천': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://stream${cctv.CH}.bcits.go.kr/bucheon/${cctv.CCTVIP}.stream/playlist.m3u8`
-  },
-  
-  '서울': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://210.179.218.${cctv.CH}:1935/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '수원': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://${cctv.CCTVIP}:2935/live/${cctv.ID}s.stream/playlist.m3u8`
-  },
-  
-  '아산': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://59.27.229.${cctv.CCTVIP}:1935/live/CCTV_${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '양산': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://114.53.252.3:1935/live/mp4:CCTV${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '영산강': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://cctvlo.yeongsanriver.go.kr/live/cctv${cctv.ID}/hls.m3u8`
-  },
-  
-  '용인': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://211.249.12.147:1935/live/video${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '원주': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://211.34.248.240:1935/live/${cctv.ID}.stream_160p/playlist.m3u8`
-  },
-  
-  '인천': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://61.40.94.13:1935/cctv/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '진주': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://its.jinju.go.kr/its/cctv/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '창원': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://210.95.69.${cctv.CCTVIP}:1935/live/video${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '천안': {
-    type: 'HLS',
-    getUrl: (cctv) => `http://${cctv.CCTVIP}:1935/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '파주': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://trafficcctv.paju.go.kr/live/${cctv.ID}.stream/playlist.m3u8`
-  },
-  
-  '포항': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://wowza.pohang.go.kr/live/${cctv.CH}.stream/playlist.m3u8`
-  },
-  
-  '한강': {
-    type: 'HLS',
-    getUrl: (cctv) => `https://lw.hrfco.go.kr/live/cctv${cctv.ID}/hls.m3u8`
-  }
-};
-
-// =============================================================================
 // ID 기반 프로토콜 결정
 // =============================================================================
 function getProtocol(id) {
@@ -232,7 +66,7 @@ function getCctvKind(cctvData) {
 }
 
 // =============================================================================
-// 메인 API: CCTV 메타데이터 + 비디오 URL (HLS 직접 URL 포함)
+// 메인 API: CCTV 메타데이터 + 비디오 URL
 // =============================================================================
 app.get('/api/cctv/:cctvId', async (req, res) => {
   try {
@@ -290,44 +124,19 @@ app.get('/api/cctv/:cctvId', async (req, res) => {
       console.log(`   센터명: ${cctvData.CENTERNAME}`);
       console.log(`   ID: ${cctvData.ID}`);
       console.log(`   PASSWD: ${cctvData.PASSWD}`);
+      if (riverType === 'geum') {
+        console.log(`   -> wlobscd: ${cctvData.PASSWD}, cctvcd: ${cctvData.ID}`);
+      } else if (riverType === 'yeongsan') {
+        console.log(`   -> wlobscd: ${cctvData.PASSWD}`);
+      } else {
+        console.log(`   -> Obscd: ${cctvData.ID}`);
+      }
     } else {
       streamPageUrl = buildStreamPageUrl(cctvData, kind, protocol);
     }
     
     console.log(`\n🌐 [WebView URL 생성]`);
     console.log(`   URL: ${streamPageUrl}`);
-    
-    // ⭐ 지역별 직접 스트리밍 URL 생성
-    let directVideoUrl = null;
-    let playerType = 'webview';
-    let streamType = null;
-    
-    const pattern = streamPatterns[cctvData.CENTERNAME];
-    
-    if (pattern) {
-      console.log(`\n🎬 [스트리밍 패턴 발견]`);
-      console.log(`   지역: ${cctvData.CENTERNAME}`);
-      console.log(`   타입: ${pattern.type}`);
-      
-      if (pattern.type === 'HLS') {
-        try {
-          directVideoUrl = pattern.getUrl(cctvData);
-          playerType = 'exoplayer';
-          streamType = 'HLS';
-          console.log(`   ✅ HLS URL 생성: ${directVideoUrl}`);
-        } catch (error) {
-          console.log(`   ⚠️ HLS URL 생성 실패: ${error.message}`);
-        }
-      } else if (pattern.type === 'MP4_SEGMENT') {
-        playerType = 'webview';
-        streamType = 'MP4_SEGMENT';
-        console.log(`   ⚠️ MP4 세그먼트 방식 - WebView 전용`);
-      }
-    } else {
-      console.log(`\n⚠️ [스트리밍 패턴 없음]`);
-      console.log(`   지역: ${cctvData.CENTERNAME}`);
-      console.log(`   -> WebView로 폴백`);
-    }
     
     console.log(`\n✅ ${cctvData.CCTVNAME} (${cctvData.CENTERNAME})`);
     console.log(`${'='.repeat(80)}\n`);
@@ -342,12 +151,11 @@ app.get('/api/cctv/:cctvId', async (req, res) => {
         lng: cctvData.XCOORD
       },
       streamPageUrl: streamPageUrl,
-      directVideoUrl: directVideoUrl,
-      playerType: playerType,
-      streamType: streamType,
       kind: kind,
       protocol: protocol,
-      riverType: riverType
+      riverType: riverType,
+      directVideoUrl: null,
+      playerType: 'webview'
     });
     
   } catch (error) {
@@ -391,17 +199,25 @@ function getRiverType(cctvData) {
 function buildRiverUrl(cctvData, riverType) {
   switch (riverType) {
     case 'hangang':
+      // 한강: http://hrfco.go.kr/sumun/cctvPopup.do?Obscd=1120176
+      // ID 값을 Obscd로 사용
       return `http://hrfco.go.kr/sumun/cctvPopup.do?Obscd=${cctvData.ID || ''}`;
       
     case 'nakdong':
+      // 낙동강: https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd=12042
+      // ID 값을 Obscd로 사용
       return `https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd=${cctvData.ID || ''}`;
       
     case 'geum':
+      // 금강: https://www.geumriver.go.kr/html/sumun/rtmpView.jsp?wlobscd=3009640&cctvcd=11016
+      // PASSWD 값을 wlobscd로, ID 값을 cctvcd로 사용
       const wlobscd = cctvData.PASSWD || '';
       const cctvcd = cctvData.ID || '';
       return `https://www.geumriver.go.kr/html/sumun/rtmpView.jsp?wlobscd=${wlobscd}&cctvcd=${cctvcd}`;
       
     case 'yeongsan':
+      // 영산강: https://www.yeongsanriver.go.kr/sumun/videoDetail.do?wlobscd=110036
+      // PASSWD 값을 wlobscd로 사용
       return `https://www.yeongsanriver.go.kr/sumun/videoDetail.do?wlobscd=${cctvData.PASSWD || ''}`;
       
     default:
@@ -413,11 +229,13 @@ function buildRiverUrl(cctvData, riverType) {
 function buildStreamPageUrl(cctvData, kind, protocol) {
   const baseUrl = `${protocol}://www.utic.go.kr/jsp/map/openDataCctvStream.jsp`;
   
+  // ⭐ UTIC 공식: 모든 cctvName을 이중 인코딩
   const doubleEncode = (str) => {
     if (!str) return '';
     return encodeURIComponent(encodeURIComponent(str));
   };
   
+  // ⭐ UTIC 공식: undefined를 문자열 "undefined"로 처리
   const getValue = (value) => {
     if (value === null || value === undefined || value === '') {
       return 'undefined';
@@ -425,6 +243,7 @@ function buildStreamPageUrl(cctvData, kind, protocol) {
     return value;
   };
   
+  // ⭐ UTIC 공식 파라미터 순서
   const params = [
     `key=${UTIC_API_KEY}`,
     `cctvid=${cctvData.CCTVID}`,
@@ -439,6 +258,7 @@ function buildStreamPageUrl(cctvData, kind, protocol) {
   
   return `${baseUrl}?${params.join('&')}`;
 }
+
 
 // =============================================================================
 // CORS 우회 프록시
@@ -491,24 +311,31 @@ app.options('/proxy/direct', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'UTIC CCTV 프록시 서버',
-    version: '6.0.0 - HLS 직접 재생 지원',
-    strategy: 'HLS Direct + WebView Fallback',
+    version: '5.2.0 - 4대강 CCTV 지원 추가',
+    strategy: 'WebView Only (UTIC 공식 방식 + 4대강 특별 처리)',
     changes: [
-      '✅ 33개 지역 스트리밍 패턴 매핑 완료',
-      '✅ HLS 방식: ExoPlayer로 직접 재생',
-      '✅ MP4 세그먼트 방식: WebView 재생 (고양, 대전)',
-      '✅ 4대강 CCTV: WebView 재생',
-      '✅ 패턴 없는 지역: WebView 폴백',
-      '✅ playerType 필드로 재생 방식 명시'
+      '✅ ID 앞 3글자 기반 프로토콜 결정 (L01-L08: http, 기타: https)',
+      '✅ 모든 cctvName 이중 인코딩 적용',
+      '✅ undefined를 문자열 "undefined"로 처리',
+      '✅ UTIC 공식 파라미터 순서 준수',
+      '✅ cctvStream.js KIND 로직 반영',
+      '✅ 4대강(한강, 낙동강, 금강, 영산강) CCTV 특별 처리 추가'
     ],
     endpoints: {
-      'GET /api/cctv/:cctvId': 'CCTV 메타데이터 + 스트리밍 URL',
+      'GET /api/cctv/:cctvId': 'CCTV 메타데이터 + WebView URL',
       'GET /proxy/direct?url=': 'CORS 우회 프록시'
     },
-    supportedRegions: {
-      HLS: Object.keys(streamPatterns).filter(k => streamPatterns[k].type === 'HLS'),
-      MP4_SEGMENT: Object.keys(streamPatterns).filter(k => streamPatterns[k].type === 'MP4_SEGMENT'),
-      totalRegions: Object.keys(streamPatterns).length
+    urlPattern: {
+      protocol: 'ID 기반 자동 결정 (L01-L08: http, 기타: https)',
+      encoding: '이중 인코딩 (모든 cctvName)',
+      undefinedHandling: '문자열 "undefined" 사용',
+      parameterOrder: 'key → cctvid → cctvName → kind → cctvip → cctvch → id → cctvpasswd → cctvport'
+    },
+    riverSupport: {
+      hangang: 'http://hrfco.go.kr/sumun/cctvPopup.do?Obscd={ID}',
+      nakdong: 'https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd={ID}',
+      geum: 'https://www.geumriver.go.kr/html/sumun/rtmpView.jsp?wlobscd={PASSWD}&cctvcd={ID}',
+      yeongsan: 'https://www.yeongsanriver.go.kr/sumun/videoDetail.do?wlobscd={PASSWD}'
     }
   });
 });
@@ -521,8 +348,9 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🎯 UTIC CCTV 프록시 서버 시작!`);
   console.log(`🌐 http://localhost:${PORT}`);
   console.log(`📦 Node.js: ${process.version}`);
-  console.log(`✅ HLS 직접 재생: ${Object.keys(streamPatterns).filter(k => streamPatterns[k].type === 'HLS').length}개 지역`);
-  console.log(`✅ MP4 세그먼트: ${Object.keys(streamPatterns).filter(k => streamPatterns[k].type === 'MP4_SEGMENT').length}개 지역`);
+  console.log(`✅ UTIC 공식 패턴 완벽 재현`);
+  console.log(`✅ 프로토콜 자동 결정 (ID 기반)`);
+  console.log(`✅ 이중 인코딩 + undefined 처리`);
   console.log(`✅ 4대강 CCTV 지원 (한강/낙동강/금강/영산강)`);
   console.log(`===============================\n`);
 });
